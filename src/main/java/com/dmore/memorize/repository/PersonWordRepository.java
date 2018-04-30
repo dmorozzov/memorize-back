@@ -17,6 +17,7 @@ public interface PersonWordRepository extends JpaRepository<PersonWord, Long>, J
         public static Specification<PersonWord> findPersonWords(PersonWordListRequest request) {
             return (personWord, query, cb) -> {
                 Predicate personPredicate = cb.equal(personWord.get("pk").get("person").get("id"), request.getPersonId());
+                query.orderBy(cb.desc(personWord.get("createDate")));
                 return personPredicate;
             };
         }

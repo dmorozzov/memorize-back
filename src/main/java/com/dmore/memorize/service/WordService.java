@@ -46,7 +46,8 @@ public class WordService {
     @Transactional
     public Page<PersonWordDTO> getPersonWordList(PersonWordListRequest listRequest) {
         Page<PersonWord> page = personWordRepository.findAll(
-                PersonWordRepository.Specifications.findPersonWords(listRequest), listRequest.getPage()
+                PersonWordRepository.Specifications.findPersonWords(listRequest),
+                listRequest.getPage()
         );
         List<PersonWordDTO> content = page.getContent().stream()
                 .map(pw -> mapperFacade.map(pw, PersonWordDTO.class))

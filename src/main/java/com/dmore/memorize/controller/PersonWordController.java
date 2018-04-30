@@ -33,12 +33,13 @@ public class PersonWordController {
 
     @RequestMapping(value = "person/word-list", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Page<PersonWordDTO> getPersonWordList(@RequestBody PersonWordListRequest personWordListRequest) {
-        LOGGER.info("Search word for {}", personWordListRequest);
+        LOGGER.info("Search words for {} request.", personWordListRequest);
         return wordService.getPersonWordList(personWordListRequest);
     }
 
     @RequestMapping(value = "/word/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public PersonWordAddRequest appendWord(@Valid @RequestBody PersonWordAddRequest personWordAddRequest) {
+        LOGGER.info("Save word \'{}\' for person #{}.", personWordAddRequest.getWord().getOriginal(), personWordAddRequest.getPersonId());
         return wordService.appendWord(personWordAddRequest);
     }
 
