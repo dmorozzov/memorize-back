@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Getter
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PersonDTO {
+public class UserDTO {
 
     private Long id;
 

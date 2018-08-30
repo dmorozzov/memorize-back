@@ -9,8 +9,8 @@ import org.springframework.data.domain.Pageable;
 @Getter
 @Setter
 @ToString
-public class PersonWordListRequest {
-    private Integer personId;
+public class UserWordListRequest {
+    private Integer userId;
     private Integer pageNumber = 0;
     private Integer pageSize = 20;
 

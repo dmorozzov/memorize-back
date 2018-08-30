@@ -1,6 +1,6 @@
 package com.dmore.memorize.model.request;
 
-import com.dmore.memorize.model.dto.PersonWordDTO;
+import com.dmore.memorize.model.dto.UserWordDTO;
 import com.dmore.memorize.model.dto.WordDTO;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PersonWordAddRequest extends BaseRequestResponse<PersonWordDTO> {
+public class UserWordCreateRequest extends BaseRequestResponse<UserWordDTO> {
     private WordDTO word;
-    private Long personId;
+    private Long userId;
 }

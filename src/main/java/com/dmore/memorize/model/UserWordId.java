@@ -5,14 +5,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Embeddable
 @Setter
 @Getter
 @EqualsAndHashCode
 @NoArgsConstructor
-class PersonWordId implements java.io.Serializable {
+class UserWordId implements java.io.Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -21,11 +25,11 @@ class PersonWordId implements java.io.Serializable {
     private Word word;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "person_id", foreignKey = @ForeignKey(name = "fk_pw_person"))
-    private Person person;
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_pw_user"))
+    private User user;
 
-    public PersonWordId(Word word, Person person) {
-        setPerson(person);
+    UserWordId(Word word, User user) {
+        this.setUser(user);
         setWord(word);
     }
 }

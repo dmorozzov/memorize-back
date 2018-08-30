@@ -1,15 +1,15 @@
 package com.dmore.memorize.service;
 
-import com.dmore.memorize.model.Person;
-import com.dmore.memorize.model.PersonWord;
+import com.dmore.memorize.model.User;
+import com.dmore.memorize.model.UserWord;
 import com.dmore.memorize.model.Word;
-import com.dmore.memorize.model.dto.PersonWordDTO;
+import com.dmore.memorize.model.dto.UserWordDTO;
 import com.dmore.memorize.model.dto.WordDTO;
 import com.dmore.memorize.model.request.BaseRequest;
-import com.dmore.memorize.model.request.PersonWordAddRequest;
-import com.dmore.memorize.model.request.PersonWordListRequest;
-import com.dmore.memorize.repository.PersonRepository;
-import com.dmore.memorize.repository.PersonWordRepository;
+import com.dmore.memorize.model.request.UserWordCreateRequest;
+import com.dmore.memorize.model.request.UserWordListRequest;
+import com.dmore.memorize.repository.UserRepository;
+import com.dmore.memorize.repository.UserWordRepository;
 import com.dmore.memorize.repository.WordRepository;
 import ma.glasnost.orika.MapperFacade;
 import org.slf4j.Logger;
@@ -21,7 +21,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,78 +34,77 @@ public class WordService {
     private WordRepository wordRepository;
 
     @Autowired
-    private PersonRepository personRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    private PersonWordRepository personWordRepository;
+    private UserWordRepository userWordRepository;
 
     @Autowired
     private MapperFacade mapperFacade;
 
     @Transactional
-    public Page<PersonWordDTO> getPersonWordList(PersonWordListRequest listRequest) {
-        Page<PersonWord> page = personWordRepository.findAll(
-                PersonWordRepository.Specifications.findPersonWords(listRequest),
+    public Page<UserWordDTO> getUserWordList(UserWordListRequest listRequest) {
+        Page<UserWord> page = userWordRepository.findAll(
+                UserWordRepository.Specifications.findUserWords(listRequest),
                 listRequest.getPage()
         );
-        List<PersonWordDTO> content = page.getContent().stream()
-                .map(pw -> mapperFacade.map(pw, PersonWordDTO.class))
+        List<UserWordDTO> content = page.getContent().stream()
+                .map(pw -> mapperFacade.map(pw, UserWordDTO.class))
                 .collect(Collectors.toList());
         return new PageImpl<>(content, PageRequest.of(page.getNumber(), page.getSize()), page.getTotalElements());
     }
 
     @Transactional
-    public PersonWordAddRequest appendWord(PersonWordAddRequest wordAddRequest) {
-        WordDTO wordDTO = wordAddRequest.getWord();
-        Long userId = wordAddRequest.getPersonId();
+    public UserWordCreateRequest bindWord(UserWordCreateRequest wordBindRequest) {
+        WordDTO wordDTO = wordBindRequest.getWord();
+        Long userId = wordBindRequest.getUserId();
         if (wordDTO == null || userId == null) {
-            LOGGER.error("Request {} is invalid", wordAddRequest);
-            wordAddRequest.markError(BaseRequest.CommonError.INVALID_REQUEST);
-            return wordAddRequest;
+            LOGGER.error("Request {} is invalid", wordBindRequest);
+            wordBindRequest.markError(BaseRequest.CommonError.INVALID_REQUEST);
+            return wordBindRequest;
         }
-        Optional<Person> userOptional = personRepository.findById(userId);
+        Optional<User> userOptional = userRepository.findById(userId);
         if (!userOptional.isPresent()) {
-            LOGGER.error("Such person {} doesn't exist", userId);
-            wordAddRequest.markError(BaseRequest.CommonError.NO_SUCH_USER);
-            return wordAddRequest;
+            LOGGER.error("Such user {} doesn't exist", userId);
+            wordBindRequest.markError(BaseRequest.CommonError.NO_SUCH_USER);
+            return wordBindRequest;
         }
 
-        Person person = userOptional.get();
+        User user = userOptional.get();
         Word newWord = mapperFacade.map(wordDTO, Word.class);
         Optional<Word> existWordOpt = wordRepository.findByOriginal(wordDTO.getOriginal());
 
         if (existWordOpt.isPresent()) {
 
-            if (isLinked(person, existWordOpt.get())) {
+            if (isLinked(user, existWordOpt.get())) {
                 LOGGER.warn("Such word {} has been already added to collection", wordDTO);
-                wordAddRequest.markWarn("Such word has been already added to collection");
-                return wordAddRequest;
+                wordBindRequest.markWarn("Such word has been already added to collection");
+                return wordBindRequest;
             } else {
                 newWord = existWordOpt.get();
             }
 
         } else {
-            newWord.setCreateDate(LocalDate.now());
             newWord = wordRepository.save(newWord);
         }
 
-        PersonWord personWord = linkWord(person, newWord);
-        wordAddRequest.setPayload(mapperFacade.map(personWord, PersonWordDTO.class));
-        return wordAddRequest;
+        UserWord userWord = linkWord(user, newWord);
+        wordBindRequest.setPayload(mapperFacade.map(userWord, UserWordDTO.class));
+        return wordBindRequest;
     }
 
-    private PersonWord linkWord(Person person, Word word) {
-        PersonWord personWord = new PersonWord();
-        personWord.setWord(word);
-        personWord.setPerson(person);
-        person.getWords().add(personWord);
-        personRepository.save(person);
-        return personWord;
+    private UserWord linkWord(User user, Word word) {
+        UserWord userWord = new UserWord();
+        userWord.setWord(word);
+        userWord.setUser(user);
+        user.getWords().add(userWord);
+        userRepository.save(user);
+        return userWord;
     }
 
-    private boolean isLinked(Person person, Word word) {
-        return person.getWords().stream()
-                .map(personWord -> personWord.getWord().getOriginal())
+    private boolean isLinked(User user, Word word) {
+        return user.getWords().stream()
+                .map(userWord -> userWord.getWord().getOriginal())
                 .anyMatch(original -> original.equals(word.getOriginal()));
     }
 
@@ -117,7 +115,6 @@ public class WordService {
         LOGGER.info("Saving word: {}", wordDTO);
 
         Word word = mapperFacade.map(wordDTO, Word.class);
-        word.setCreateDate(LocalDate.now());
         word = wordRepository.save(word);
 
         return mapperFacade.map(word, WordDTO.class);

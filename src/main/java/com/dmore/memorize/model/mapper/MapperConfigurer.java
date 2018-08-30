@@ -1,10 +1,10 @@
 package com.dmore.memorize.model.mapper;
 
-import com.dmore.memorize.model.Person;
-import com.dmore.memorize.model.PersonWord;
+import com.dmore.memorize.model.User;
+import com.dmore.memorize.model.UserWord;
 import com.dmore.memorize.model.Word;
-import com.dmore.memorize.model.dto.PersonDTO;
-import com.dmore.memorize.model.dto.PersonWordDTO;
+import com.dmore.memorize.model.dto.UserDTO;
+import com.dmore.memorize.model.dto.UserWordDTO;
 import com.dmore.memorize.model.dto.WordDTO;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
@@ -18,13 +18,13 @@ public class MapperConfigurer extends ConfigurableMapper {
                 .byDefault()
                 .register();
 
-        factory.classMap(Person.class, PersonDTO.class)
+        factory.classMap(User.class, UserDTO.class)
                 .byDefault()
                 .register();
 
-        factory.classMap(PersonWord.class, PersonWordDTO.class)
+        factory.classMap(UserWord.class, UserWordDTO.class)
                 .byDefault()
-                .customize(new PersonWordToDTOMapper())
+                .customize(new UserWordToDTOMapper())
                 .register();
     }
 

@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class PersonWordDTO {
-    private PersonDTO personDTO;
+public class UserWordDTO {
+    private UserDTO userDTO;
     private WordDTO wordDTO;
     private LocalDateTime createDate;
 }
