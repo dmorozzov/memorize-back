@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class BaseRequestResponse<T> extends BaseRequest {
+public class PayloadResponse<T> extends BaseApiResponse {
     private T payload;
 }

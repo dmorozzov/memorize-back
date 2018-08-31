@@ -1,6 +1,7 @@
 package com.dmore.memorize.controller;
 
 import com.dmore.memorize.model.dto.UserWordDTO;
+import com.dmore.memorize.model.request.BaseApiResponse;
 import com.dmore.memorize.model.request.UserWordCreateRequest;
 import com.dmore.memorize.model.request.UserWordListRequest;
 import com.dmore.memorize.service.WordService;
@@ -33,7 +34,7 @@ public class UserWordController {
     }
 
     @RequestMapping(value = "/word/save", method = RequestMethod.POST)
-    public UserWordCreateRequest appendWord(@Valid @RequestBody UserWordCreateRequest userWordCreateRequest) {
+    public BaseApiResponse appendWord(@Valid @RequestBody UserWordCreateRequest userWordCreateRequest) {
         LOGGER.info("Save word \'{}\' for user #{}.", userWordCreateRequest.getWord().getOriginal(), userWordCreateRequest.getUserId());
         return wordService.bindWord(userWordCreateRequest);
     }

@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UserWordCreateRequest extends BaseRequestResponse<UserWordDTO> {
+public class UserWordCreateRequest extends PayloadResponse<UserWordDTO> {
     private WordDTO word;
     private Long userId;
 }

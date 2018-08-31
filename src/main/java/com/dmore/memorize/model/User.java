@@ -38,7 +38,10 @@ public class User extends TimeAuditEntity {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "email")
+    @Column(name = "username", unique = true)
+    private String userName;
+
+    @Column(name = "email", unique = true)
     private String email;
 
     @Column(name = "password")
@@ -56,4 +59,11 @@ public class User extends TimeAuditEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserWord> words = new HashSet<>();
 
+    public User(String name, String userName, String email, String password, LocalDate birthday) {
+        this.name = name;
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
+        this.birthday = birthday;
+    }
 }

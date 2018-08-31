@@ -5,7 +5,7 @@ import com.dmore.memorize.model.UserWord;
 import com.dmore.memorize.model.Word;
 import com.dmore.memorize.model.dto.UserWordDTO;
 import com.dmore.memorize.model.dto.WordDTO;
-import com.dmore.memorize.model.request.BaseRequest;
+import com.dmore.memorize.model.request.BaseApiResponse;
 import com.dmore.memorize.model.request.UserWordCreateRequest;
 import com.dmore.memorize.model.request.UserWordListRequest;
 import com.dmore.memorize.repository.UserRepository;
@@ -55,19 +55,17 @@ public class WordService {
     }
 
     @Transactional
-    public UserWordCreateRequest bindWord(UserWordCreateRequest wordBindRequest) {
+    public BaseApiResponse bindWord(UserWordCreateRequest wordBindRequest) {
         WordDTO wordDTO = wordBindRequest.getWord();
         Long userId = wordBindRequest.getUserId();
         if (wordDTO == null || userId == null) {
             LOGGER.error("Request {} is invalid", wordBindRequest);
-            wordBindRequest.markError(BaseRequest.CommonError.INVALID_REQUEST);
-            return wordBindRequest;
+            return BaseApiResponse.makeFailure("Request is invalid");
         }
         Optional<User> userOptional = userRepository.findById(userId);
         if (!userOptional.isPresent()) {
             LOGGER.error("Such user {} doesn't exist", userId);
-            wordBindRequest.markError(BaseRequest.CommonError.NO_SUCH_USER);
-            return wordBindRequest;
+            return BaseApiResponse.makeFailure("User doesn't exist");
         }
 
         User user = userOptional.get();
@@ -78,8 +76,7 @@ public class WordService {
 
             if (isLinked(user, existWordOpt.get())) {
                 LOGGER.warn("Such word {} has been already added to collection", wordDTO);
-                wordBindRequest.markWarn("Such word has been already added to collection");
-                return wordBindRequest;
+                return BaseApiResponse.makeWarn("Such word exists already");
             } else {
                 newWord = existWordOpt.get();
             }
