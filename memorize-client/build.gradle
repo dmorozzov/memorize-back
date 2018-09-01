@@ -1,0 +1,46 @@
+group 'com.dmore'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    dependencies {
+        classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
+    }
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+}
+
+apply plugin: 'idea'
+apply plugin: 'com.moowork.node'
+
+node {
+    version = '8.11.4'
+    npmVersion = '5.6.0'
+    download = true
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+}
+
+task webpack(type: NodeTask, dependsOn: 'npmInstall') {
+    def osName = System.getProperty("os.name").toLowerCase()
+    if (osName.contains("windows")) {
+        script = project.file('node_modules/webpack/bin/webpack.js')
+    } else {
+        script = project.file('node_modules/.bin/webpack')
+    }
+}
+
+//processResources.dependsOn 'webpack'
+
+//clean.delete << file('node_modules')
+//clean.delete << file('src/main/resources/static/dist')

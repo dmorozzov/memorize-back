@@ -19,7 +19,7 @@ public interface UserWordRepository extends JpaRepository<UserWord, Long>, JpaSp
         public static Specification<UserWord> findUserWords(UserWordListRequest request) {
             return (userWord, query, cb) -> {
                 Predicate userPredicate = cb.equal(userWord.get("pk").get("user").get("id"), request.getUserId());
-                query.orderBy(cb.desc(userWord.get("created_at")));
+                query.orderBy(cb.desc(userWord.get("createdAt")));
                 return userPredicate;
             };
         }

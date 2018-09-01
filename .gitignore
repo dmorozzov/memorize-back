@@ -9,5 +9,5 @@
 
 node_modules
 src/main/resources/application.yml
-src/main/resources/static/dist/*
+src/main/resources/static/*
 

@@ -10,5 +10,5 @@ import java.time.LocalDateTime;
 public class UserWordDTO {
     private UserDTO userDTO;
     private WordDTO wordDTO;
-    private LocalDateTime createDate;
+    private LocalDateTime createdAt;
 }

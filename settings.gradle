@@ -1,1 +1,3 @@
 rootProject.name = 'memorize-back'
+include 'memorize-client'
+
