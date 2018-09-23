@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {login} from '../util/APIUtils';
+import {login} from '../util/ApiUtils';
 import {ACCESS_TOKEN} from '../util/constants';
 
 class Login extends Component {

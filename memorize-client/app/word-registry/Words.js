@@ -3,6 +3,8 @@ import React from "react";
 import Resources from "../util/ApiUtils.js";
 import WordList from "./WordList.js";
 import WordAddDialog from "./WordAddDialog.js";
+import AppHeader from "../common/AppHeader";
+import {USER_NOT_AUTHORIZED} from "../util/constants"
 
 export default class Words extends React.Component {
     constructor(props) {
@@ -14,7 +16,6 @@ export default class Words extends React.Component {
 
         this.state = {
             words: [],
-            userId: 1,
             pageInfo: {
                 requestSent: false,
                 pageNumber: 0,
@@ -23,40 +24,20 @@ export default class Words extends React.Component {
         };
     }
 
-    componentDidMount() {
-        window.addEventListener("scroll", this.handleOnScroll);
-        this.loadData();
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener("scroll", this.handleOnScroll);
-    }
-
-    handleOnScroll() {
-        var scrollTop =
-            (document.documentElement && document.documentElement.scrollTop) ||
-            document.body.scrollTop;
-        var scrollHeight =
-            (document.documentElement && document.documentElement.scrollHeight) ||
-            document.body.scrollHeight;
-        var clientHeight =
-            document.documentElement.clientHeight || window.innerHeight;
-        var scrolledToBottom = Math.ceil(scrollTop + clientHeight) >= scrollHeight;
-
-        if (scrolledToBottom) {
-            this.loadData();
-        }
-    }
-
     loadData() {
         const self = this;
         if (self.state.pageInfo.requestSent || self.state.pageInfo.endReached) {
             return;
         }
+        if (!self.props.isAuthenticated) {
+            alert(USER_NOT_AUTHORIZED);
+            return;
+        }
+
         let request = {
             pageNumber: self.state.pageInfo.pageNumber,
             pageSize: self.state.pageInfo.pageSize,
-            userId: self.state.userId
+            userId: self.props.currentUser.id
         };
 
         this.setState(
@@ -97,7 +78,11 @@ export default class Words extends React.Component {
 
     onAddWord(word) {
         const self = this;
-        let request = {word: word, userId: self.state.userId};
+        if (!self.props.isAuthenticated) {
+            alert(USER_NOT_AUTHORIZED);
+            return;
+        }
+        let request = {word: word, userId: self.props.currentUser.id};
         Resources.saveWord(request)
             .then(result => {
                 if (result.data.status === "ERROR") {
@@ -133,9 +118,39 @@ export default class Words extends React.Component {
     render() {
         return (
             <div>
-                <WordAddDialog onClick={word => this.onAddWord(word)}/>
-                <WordList words={this.state.words} pageInfo={this.state.pageInfo}/>
+                <AppHeader isAuthenticated={this.props.isAuthenticated}
+                           currentUser={this.props.currentUser}
+                           handleLogout={this.props.handleLogout} />
+                <div className="ui main container shift_content">
+                    <WordAddDialog onClick={word => this.onAddWord(word)}/>
+                    <WordList words={this.state.words} pageInfo={this.state.pageInfo}/>
+                </div>
             </div>
         );
+    }
+
+    componentDidMount() {
+        window.addEventListener("scroll", this.handleOnScroll);
+        this.loadData();
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("scroll", this.handleOnScroll);
+    }
+
+    handleOnScroll() {
+        var scrollTop =
+            (document.documentElement && document.documentElement.scrollTop) ||
+            document.body.scrollTop;
+        var scrollHeight =
+            (document.documentElement && document.documentElement.scrollHeight) ||
+            document.body.scrollHeight;
+        var clientHeight =
+            document.documentElement.clientHeight || window.innerHeight;
+        var scrolledToBottom = Math.ceil(scrollTop + clientHeight) >= scrollHeight;
+
+        if (scrolledToBottom) {
+            this.loadData();
+        }
     }
 }

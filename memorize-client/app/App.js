@@ -7,12 +7,12 @@ import './main.css';
 
 import React, {Component} from 'react';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
-import Words from "./components/Words";
-import AppHeader from "./components/AppHeader";
-import NotFound from "./components/NotFound";
-import Login from "./components/Login";
+import Words from "./word-registry/Words";
+import NotFound from "./common/NotFound";
+import Login from "./common/Login";
 
-import {getCurrentUser} from './util/APIUtils';
+import {getCurrentUser} from './util/ApiUtils';
+import {ACCESS_TOKEN} from './util/constants';
 
 export default class App extends Component {
     constructor(props) {
@@ -31,14 +31,13 @@ export default class App extends Component {
         this.setState({
             isLoading: true
         });
-        getCurrentUser()
-            .then(response => {
-                this.setState({
-                    currentUser: response,
-                    isAuthenticated: true,
-                    isLoading: false
-                });
-            }).catch(error => {
+        getCurrentUser(response => {
+            this.setState({
+                currentUser: response.data,
+                isAuthenticated: true,
+                isLoading: false
+            });
+        }, error => {
             this.setState({
                 isLoading: false
             });
@@ -49,7 +48,8 @@ export default class App extends Component {
         this.loadCurrentUser();
     }
 
-    handleLogout(redirectTo = "/", notificationType = "success", description = "You're successfully logged out.") {
+    handleLogout(redirectTo = "/", notificationType = "success",
+                 description = "You're successfully logged out.") {
         localStorage.removeItem(ACCESS_TOKEN);
 
         this.setState({
@@ -68,19 +68,14 @@ export default class App extends Component {
     render() {
         return (
             <Router>
-                <div>
-                    <AppHeader/>
-                    <div className="ui main container shift_content">
-                        <Switch>
-                            <Route exact path='/' render={(props) => <Words isAuthenticated={this.state.isAuthenticated}
-                                                                            currentUser={this.state.currentUser}
-                                                                            handleLogout={this.handleLogout} {...props}/> }/>
-                            <Route path="/login"
-                                   render={(props) => <Login onLogin={this.handleLogin} {...props} />}/>
-                            <Route path='*' component={NotFound}/>
-                        </Switch>
-                    </div>
-                </div>
+                <Switch>
+                    <Route exact path='/' render={(props) => <Words isAuthenticated={this.state.isAuthenticated}
+                                                                    currentUser={this.state.currentUser}
+                                                                    handleLogout={this.handleLogout} {...props}/>}/>
+                    <Route path="/login"
+                           render={(props) => <Login onLogin={this.handleLogin} {...props} />}/>
+                    <Route path='*' component={NotFound}/>
+                </Switch>
             </Router>
         )
     }

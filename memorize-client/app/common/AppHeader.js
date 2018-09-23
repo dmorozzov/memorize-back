@@ -5,6 +5,11 @@ export default class AppHeader extends React.Component {
     constructor(props) {
         super(props);
         this.showWordAppender = this.showWordAppender.bind(this);
+        this.handleLogout = this.handleLogout.bind(this);
+    }
+
+    handleLogout() {
+        this.props.handleLogout();
     }
 
     showWordAppender() {
@@ -22,6 +27,8 @@ export default class AppHeader extends React.Component {
     }
 
     render() {
+        const isAuthenticated = this.props.isAuthenticated;
+        const currentUser = this.props.currentUser;
         return (
             <div className="ui huge fixed borderless teal menu">
                 <div className="ui text container">
@@ -36,12 +43,18 @@ export default class AppHeader extends React.Component {
                         Training
                     </Link>
 
-                    <div className="ui right small item search">
-                        <Link className="item" to="/login">Login</Link>
-                        <form className="ui left small icon input">
-                            <input className="prompt" type="text" placeholder="Search word"/>
-                            <i className="search icon"/>
-                        </form>
+                    <div className="ui right item">
+                        {isAuthenticated ? (
+                            <div className="ui simple dropdown item" tabIndex="0">
+                                {currentUser.name}
+                                <i className="dropdown icon"></i>
+                                <div className="menu" tabIndex="-1">
+                                    <div className="item" onClick={this.handleLogout}>Logout</div>
+                                </div>
+                            </div>
+                        ) : (
+                            <Link className="item" to="/login">Login</Link>
+                        )}
                     </div>
                 </div>
             </div>

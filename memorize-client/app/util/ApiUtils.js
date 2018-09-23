@@ -24,7 +24,7 @@ const doPostRequest = function (url, payload, success = defaultSuccessHandler, f
         .catch(err => failure(err));
 };
 
-const doGetRequest = function (url, success, failure) {
+const doGetRequest = function (url, success = defaultSuccessHandler, failure = defaultFailureHandler) {
     let token = localStorage.getItem(ACCESS_TOKEN);
     let currHeaders = Object.assign({}, headers);
     if (token) {
@@ -39,18 +39,16 @@ const doGetRequest = function (url, success, failure) {
         .catch(err => failure(err));
 };
 
-export function login(loginRequest, success, error) {
-    debugger;
-    return doPostRequest('/auth/signin', loginRequest, success, error);
+export function login(loginRequest, successFn, errorFn) {
+    return doPostRequest('/auth/signin', loginRequest, successFn, errorFn);
 }
 
-export function getCurrentUser() {
-    debugger;
+export function getCurrentUser(successFn, errorFn) {
     if (!localStorage.getItem(ACCESS_TOKEN)) {
         return Promise.reject("No access token set.");
     }
 
-    return doGetRequest('/user/me');
+    return doPostRequest('/user/me', {}, successFn, errorFn);
 }
 
 export default class Resourses {
